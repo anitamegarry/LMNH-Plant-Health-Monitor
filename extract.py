@@ -15,7 +15,8 @@ def get_plant_data(plant_id: int) -> dict:
     response = requests.get(URL + str(plant_id), timeout=10)
     if response.status_code == 200:
         return response.json()
-    return {"error": response.status_code, "message": f"Failed to retrieve data for plant ID {plant_id}."}
+    return {"error": response.status_code,
+            "message": f"Failed to retrieve data for plant ID {plant_id}."}
 
 
 def extract_plant_data(response: dict) -> dict:
