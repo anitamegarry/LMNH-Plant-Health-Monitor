@@ -115,7 +115,6 @@ VALUES
     ('Eliza','Andrews','eliza.andrews@lnhm.co.uk','(846)669-6651x75948')
 
 
-
 INSERT INTO country
     (country_code, country_name) 
 VALUES
