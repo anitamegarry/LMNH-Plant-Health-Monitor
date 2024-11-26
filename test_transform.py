@@ -2,7 +2,7 @@
 import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from transform import convert_columns_to_datetime
+from transform import convert_columns_to_datetime, clean_name
 
 
 def test_convert_columns_to_datetime():
@@ -31,3 +31,20 @@ def test_convert_columns_to_datetime():
     result_data = convert_columns_to_datetime(input_data)
 
     assert_frame_equal(result_data, expected, check_dtype=True)
+
+
+@pytest.mark.parametrize(
+    "input_name, expected_output",
+    [
+        ("Venus Flytrap", "venus flytrap"),
+        ("BaBy   FLOWER!!!", "baby flower"),
+        (None, None),
+        ("123!@#", ""),
+        (" Elephant   Ear ", "elephant ear"),
+        ("Orchid 12345!!", "orchid"),
+        ("     Cactus  ", "cactus"),
+        ("", ""),
+    ]
+)
+def test_clean_name(input_name, expected_output):
+    assert clean_name(input_name) == expected_output
