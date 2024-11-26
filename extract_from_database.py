@@ -1,5 +1,7 @@
 """Connects to Microsoft SQL Server, extracts all data and stores it as a .csv file"""
 
+# pylint: disable=E1101
+
 import os
 
 import pymssql
