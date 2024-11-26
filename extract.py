@@ -78,4 +78,6 @@ def load_into_dataframe() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    load_into_dataframe()
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    print(load_into_dataframe())
