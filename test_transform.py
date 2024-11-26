@@ -15,7 +15,7 @@ def test_convert_columns_to_datetime():
         ]
     })
 
-    expected_data = pd.DataFrame({
+    expected = pd.DataFrame({
         "recording_taken": [
             pd.to_datetime("2024-11-25 15:30:00").tz_localize("UTC"),
             pd.NaT,
@@ -30,4 +30,4 @@ def test_convert_columns_to_datetime():
 
     result_data = convert_columns_to_datetime(input_data)
 
-    assert_frame_equal(result_data, expected_data, check_dtype=True)
+    assert_frame_equal(result_data, expected, check_dtype=True)
