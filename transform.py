@@ -16,13 +16,4 @@ def convert_columns_to_datetime(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     plant_dataframe = load_into_dataframe()
-    plant_dataframe = convert_columns_to_datetime(plant_dataframe)
-    print(plant_dataframe['botanist_first_name'])
-    print(plant_dataframe['botanist_last_name'])
-    print(plant_dataframe['botanist_email'])
-    print(plant_dataframe['botanist_phone_number'])
-    print(plant_dataframe['recording_taken'])
-    print(plant_dataframe['last_watered'])
-    print(plant_dataframe['soil_moisture'])
-    print(plant_dataframe['temperature'])
-    print(plant_dataframe['country_code'])
+    convert_columns_to_datetime(plant_dataframe)
