@@ -49,9 +49,16 @@ def initialise_dataframe() -> pd.DataFrame:
     """Creates the initial, empty DataFrame with columns."""
     return pd.DataFrame({
         "botanist_first_name": pd.Series(dtype=str),
+        "botanist_last_name": pd.Series(dtype=str),
+        "botanist_email": pd.Series(dtype=str),
+        "botanist_phone_number": pd.Series(dtype=str),
         "plant_name": pd.Series(dtype=str),
         "plant_scientific_name": pd.Series(dtype=str),
-
+        "recording_taken": pd.Series(dtype=str),
+        "last_watered": pd.Series(dtype=str),
+        "soil_moisture": pd.Series(dtype=float),
+        "temperature": pd.Series(dtype=float),
+        "country_code": pd.Series(dtype=str),
     })
 
 
@@ -71,5 +78,4 @@ def load_into_dataframe() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    pd.set_option('display.max_columns', None)
-    print(load_into_dataframe())
+    load_into_dataframe()
