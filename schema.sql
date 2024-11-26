@@ -40,8 +40,8 @@ CREATE TABLE recording (
 
 CREATE TABLE species (
     species_id SMALLINT GENERATED ALWAYS AS IDENTITY,
-    plant_name VARCHAR(30) NOT NULL,
-    plant_scientific_name VARCHAR(50) NOT NULL UNIQUE,
+    plant_name VARCHAR(30),
+    plant_scientific_name VARCHAR(50) UNIQUE,
     PRIMARY KEY (species_id)
 );
 
