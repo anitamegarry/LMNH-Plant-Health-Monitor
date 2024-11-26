@@ -4,11 +4,11 @@
 
 import os
 import csv
+from datetime import datetime
 
 import pymssql
 from dotenv import load_dotenv
 import boto3
-from datetime import datetime
 
 load_dotenv()
 
@@ -72,6 +72,7 @@ def extract_data() -> None:
             writer.writerow(column_titles)
             writer.writerows(results)
         print("Data extracted successfully.")
+        return None
     except pymssql.Error as e:
         print(f"Error executing query: {e}")
         return None
