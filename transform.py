@@ -34,4 +34,3 @@ if __name__ == "__main__":
     plant_dataframe = load_into_dataframe()
     convert_columns_to_datetime(plant_dataframe)
     plant_dataframe = clean_plant_names(plant_dataframe)
-    print(plant_dataframe['plant_name'])
