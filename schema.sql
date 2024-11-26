@@ -21,7 +21,7 @@ CREATE TABLE botanist (
     botanist_id SMALLINT GENERATED ALWAYS AS IDENTITY,
     botanist_first_name VARCHAR(20) NOT NULL,
     botanist_last_name VARCHAR(20) NOT NULL,
-    botanist_email VARCHAR(50) NOT NULL,
+    botanist_email VARCHAR(50) NOT NULL UNIQUE,
     botanist_phone_number VARCHAR(20)
     PRIMARY KEY (botanist_id)
 );
@@ -40,8 +40,7 @@ CREATE TABLE recording (
 
 CREATE TABLE species (
     species_id SMALLINT GENERATED ALWAYS AS IDENTITY,
-    plant_name VARCHAR(30) NOT NULL,
-    plant_scientific_name VARCHAR(50) NOT NULL UNIQUE,
+    plant_name VARCHAR(30) UNIQUE,
     PRIMARY KEY (species_id)
 );
 
@@ -51,6 +50,7 @@ CREATE TABLE country (
     country_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (country_id)
 );
+
 
 
 INSERT INTO country
