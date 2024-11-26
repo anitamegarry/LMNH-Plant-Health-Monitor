@@ -1,6 +1,7 @@
+# pylint: skip-file
 import pytest
-from unittest import mock
 from unittest.mock import patch, MagicMock
+from unittest import mock
 import pandas as pd
 from extract import get_plant_data, extract_plant_data, load_into_dataframe, TOTAL_NUMBER_OF_PLANTS
 
