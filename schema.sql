@@ -21,7 +21,7 @@ CREATE TABLE botanist (
     botanist_id SMALLINT GENERATED ALWAYS AS IDENTITY,
     botanist_first_name VARCHAR(20) NOT NULL,
     botanist_last_name VARCHAR(20) NOT NULL,
-    botanist_email VARCHAR(50) NOT NULL,
+    botanist_email VARCHAR(50) NOT NULL UNIQUE,
     botanist_phone_number VARCHAR(20)
     PRIMARY KEY (botanist_id)
 );
