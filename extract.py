@@ -2,9 +2,9 @@
    Extracts the data
    Puts it into a Pandas DataFrame"""
 from multiprocessing import Pool, cpu_count
+from typing import Optional
 import requests
 import pandas as pd
-
 
 URL = "https://data-eng-plants-api.herokuapp.com/plants/"
 TOTAL_NUMBER_OF_PLANTS = 50
@@ -15,7 +15,8 @@ def get_plant_data(plant_id: int) -> dict:
     response = requests.get(URL + str(plant_id), timeout=10)
     if response.status_code == 200:
         return response.json()
-    return {"error": response.status_code, "message": f"Failed to retrieve data for plant ID {plant_id}."}
+    return {"error": response.status_code,
+            "message": f"Failed to retrieve data for plant ID {plant_id}."}
 
 
 def extract_plant_data(response: dict) -> dict:
@@ -36,7 +37,7 @@ def extract_plant_data(response: dict) -> dict:
     }
 
 
-def fetch_and_extract_plant_data(plant_id: int) -> dict:
+def fetch_and_extract_plant_data(plant_id: int) -> Optional[dict]:
     """Fetches plant data and extracts relevant fields."""
     response = get_plant_data(plant_id)
     if "error" in response:
