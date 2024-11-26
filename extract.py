@@ -2,6 +2,7 @@
    Extracts the data
    Puts it into a Pandas DataFrame"""
 from multiprocessing import Pool, cpu_count
+from typing import Optional
 import requests
 import pandas as pd
 
@@ -36,7 +37,7 @@ def extract_plant_data(response: dict) -> dict:
     }
 
 
-def fetch_and_extract_plant_data(plant_id: int) -> dict:
+def fetch_and_extract_plant_data(plant_id: int) -> Optional[dict]:
     """Fetches plant data and extracts relevant fields."""
     response = get_plant_data(plant_id)
     if "error" in response:
