@@ -14,7 +14,7 @@ TOTAL_NUMBER_OF_PLANTS = 50
 def get_plant_data(plant_id: int) -> dict:
     """GET request to collect plant data from API."""
     try:
-        response = requests.get(URL + str(plant_id), timeout=1000)
+        response = requests.get(URL + str(plant_id), timeout=10)
         if response.status_code == 200:
             return response.json()
         return {"error": 404, "message": f"Failed to retrieve data for plant ID {plant_id}."}
@@ -77,5 +77,4 @@ if __name__ == "__main__":
         "temperature": pd.Series(dtype=float),
         "country_code": pd.Series(dtype=str),
     })
-
-    print(load_into_dataframe(plant_df))
+    load_into_dataframe(plant_df)
