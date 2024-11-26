@@ -4,3 +4,4 @@
 *.tfstate.backup
 .venv
 *.csv
+.DS_Store
