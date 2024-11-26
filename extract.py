@@ -1,7 +1,6 @@
 """Script that connects to 'data-eng-plants-api'
    Extracts the data
    Puts it into a Pandas DataFrame"""
-import logging
 from multiprocessing import Pool, cpu_count
 import requests
 import pandas as pd
@@ -13,14 +12,10 @@ TOTAL_NUMBER_OF_PLANTS = 50
 
 def get_plant_data(plant_id: int) -> dict:
     """GET request to collect plant data from API."""
-    try:
-        response = requests.get(URL + str(plant_id), timeout=10)
-        if response.status_code == 200:
-            return response.json()
-        return {"error": 404, "message": f"Failed to retrieve data for plant ID {plant_id}."}
-    except requests.RequestException as e:
-        logging.error("Request failed for plant ID %d: %s", plant_id, e)
-        return {"error": 500, "message": f"Server error for plant ID {plant_id}."}
+    response = requests.get(URL + str(plant_id), timeout=10)
+    if response.status_code == 200:
+        return response.json()
+    return {"error": 404, "message": f"Failed to retrieve data for plant ID {plant_id}."}
 
 
 def extract_plant_data(response: dict) -> dict:
@@ -31,7 +26,7 @@ def extract_plant_data(response: dict) -> dict:
         "botanist_last_name": botanist_name[1] if len(botanist_name) > 1 else None,
         "botanist_email": response.get("botanist", {}).get("email"),
         "botanist_phone_number": response.get("botanist", {}).get("phone"),
-        "plant_name": response.get("name"),
+        "plant_name": response.get("name", None),
         "plant_scientific_name": response.get("scientific_name", [None])[0],
         "recording_taken": response.get("recording_taken"),
         "last_watered": response.get("last_watered"),
