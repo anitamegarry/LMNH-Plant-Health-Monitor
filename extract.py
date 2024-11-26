@@ -78,4 +78,5 @@ def load_into_dataframe() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-   load_into_dataframe()
+    load_into_dataframe()
+
