@@ -6,7 +6,6 @@ from typing import Optional
 import requests
 import pandas as pd
 
-
 URL = "https://data-eng-plants-api.herokuapp.com/plants/"
 TOTAL_NUMBER_OF_PLANTS = 50
 
