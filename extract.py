@@ -11,7 +11,7 @@ URL = "https://data-eng-plants-api.herokuapp.com/plants/"
 TOTAL_NUMBER_OF_PLANTS = 50
 
 
-def get_plant_data(plant_id: int):
+def get_plant_data(plant_id: int) -> dict:
     """GET request to collect plant data from API."""
     try:
         response = requests.get(URL + str(plant_id), timeout=1000)
