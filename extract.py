@@ -15,7 +15,7 @@ def get_plant_data(plant_id: int) -> dict:
     response = requests.get(URL + str(plant_id), timeout=10)
     if response.status_code == 200:
         return response.json()
-    return {"error": 404, "message": f"Failed to retrieve data for plant ID {plant_id}."}
+    return {"error": response.status_code, "message": f"Failed to retrieve data for plant ID {plant_id}."}
 
 
 def extract_plant_data(response: dict) -> dict:
@@ -44,8 +44,26 @@ def fetch_and_extract_plant_data(plant_id: int) -> dict:
     return extract_plant_data(response)
 
 
-def load_into_dataframe(plant_dataframe: pd.DataFrame) -> pd.DataFrame:
+def initialise_dataframe() -> pd.DataFrame:
+    """Creates the initial, empty DataFrame with columns."""
+    return pd.DataFrame({
+        "botanist_first_name": pd.Series(dtype=str),
+        "botanist_last_name": pd.Series(dtype=str),
+        "botanist_email": pd.Series(dtype=str),
+        "botanist_phone_number": pd.Series(dtype=str),
+        "plant_name": pd.Series(dtype=str),
+        "plant_scientific_name": pd.Series(dtype=str),
+        "recording_taken": pd.Series(dtype=str),
+        "last_watered": pd.Series(dtype=str),
+        "soil_moisture": pd.Series(dtype=float),
+        "temperature": pd.Series(dtype=float),
+        "country_code": pd.Series(dtype=str),
+    })
+
+
+def load_into_dataframe() -> pd.DataFrame:
     """Fetches API data for all plants using multiprocessing and appends it to a DataFrame."""
+    plant_dataframe = initialise_dataframe()
     with Pool(processes=cpu_count()) as pool:
         results = pool.map(fetch_and_extract_plant_data,
                            range(TOTAL_NUMBER_OF_PLANTS + 1))
@@ -59,17 +77,4 @@ def load_into_dataframe(plant_dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    plant_df = pd.DataFrame({
-        "botanist_first_name": pd.Series(dtype=str),
-        "botanist_last_name": pd.Series(dtype=str),
-        "botanist_email": pd.Series(dtype=str),
-        "botanist_phone_number": pd.Series(dtype=str),
-        "plant_name": pd.Series(dtype=str),
-        "plant_scientific_name": pd.Series(dtype=str),
-        "recording_taken": pd.Series(dtype=str),
-        "last_watered": pd.Series(dtype=str),
-        "soil_moisture": pd.Series(dtype=float),
-        "temperature": pd.Series(dtype=float),
-        "country_code": pd.Series(dtype=str),
-    })
-    load_into_dataframe(plant_df)
+    load_into_dataframe()
