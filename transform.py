@@ -30,7 +30,12 @@ def clean_plant_names(dataframe: pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 
+def main() -> None:
+    """Calls all of the above functions"""
+    dataframe = load_into_dataframe()
+    convert_columns_to_datetime(dataframe)
+    dataframe = clean_plant_names(dataframe)
+
+
 if __name__ == "__main__":
-    plant_dataframe = load_into_dataframe()
-    convert_columns_to_datetime(plant_dataframe)
-    plant_dataframe = clean_plant_names(plant_dataframe)
+    main()
