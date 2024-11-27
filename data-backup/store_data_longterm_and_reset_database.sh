@@ -10,4 +10,4 @@ else
     exit 1
 fi
 
-sqlcmd -S $DB_HOST -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -i schema.sql
+sqlcmd -S $DB_HOST -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -i ../schema.sql
