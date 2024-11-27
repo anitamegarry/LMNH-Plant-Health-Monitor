@@ -4,11 +4,12 @@ GO
 
 SET DATEFORMAT dmy;
 
+IF OBJECT_ID('beta.recording', 'U') IS NOT NULL DROP TABLE beta.recording;
+IF OBJECT_ID('beta.plant', 'U') IS NOT NULL DROP TABLE beta.plant;
 IF OBJECT_ID('beta.country', 'U') IS NOT NULL DROP TABLE beta.country;
 IF OBJECT_ID('beta.species', 'U') IS NOT NULL DROP TABLE beta.species;
-IF OBJECT_ID('beta.recording', 'U') IS NOT NULL DROP TABLE beta.recording;
 IF OBJECT_ID('beta.botanist', 'U') IS NOT NULL DROP TABLE beta.botanist;
-IF OBJECT_ID('beta.plant', 'U') IS NOT NULL DROP TABLE beta.plant;
+
 
 CREATE TABLE beta.country (
     country_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
@@ -108,9 +109,8 @@ VALUES
     ('Gertrude', 'Jekyll', 'gertrude.jekyll@lnhm.co.uk', '001-481-273-3691x127'),
     ('Eliza', 'Andrews', 'eliza.andrews@lnhm.co.uk', '(846)669-6651x75948');
 
-
 INSERT INTO beta.country
-    (country_code, country_name)
+    (country_code, country_name) 
 VALUES
     ('AF', 'Afghanistan'),
     ('AL', 'Albania'),

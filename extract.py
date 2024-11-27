@@ -22,13 +22,14 @@ def get_plant_data(plant_id: int) -> dict:
 def extract_plant_data(response: dict) -> dict:
     """Extracts plant data from the API response and handles missing fields."""
     botanist_name = response.get("botanist", {}).get("name", "").split()
+    plant_name = response.get("name") or response.get(
+        "scientific_name") or None
     return {
         "botanist_first_name": botanist_name[0] if len(botanist_name) > 0 else None,
         "botanist_last_name": botanist_name[1] if len(botanist_name) > 1 else None,
         "botanist_email": response.get("botanist", {}).get("email"),
         "botanist_phone_number": response.get("botanist", {}).get("phone"),
-        "plant_name": response.get("name", None),
-        "plant_scientific_name": response.get("scientific_name", [None])[0],
+        "plant_name": plant_name,
         "recording_taken": response.get("recording_taken"),
         "last_watered": response.get("last_watered"),
         "soil_moisture": response.get("soil_moisture"),
