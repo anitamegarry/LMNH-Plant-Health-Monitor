@@ -105,12 +105,11 @@ VALUES
 INSERT INTO beta.botanist
     (botanist_first_name, botanist_last_name, botanist_email, botanist_phone_number)
 VALUES
-    ('Carl','Linnaeus','carl.linnaeus@lnhm.co.uk','(146)994-1635x35992')
-    ('Gertrude','Jekyll','gertrude.jekyll@lnhm.co.uk','001-481-273-3691x127')
-    ('Eliza','Andrews','eliza.andrews@lnhm.co.uk','(846)669-6651x75948')
+    ('Carl', 'Linnaeus', 'carl.linnaeus@lnhm.co.uk', '(146)994-1635x35992'),
+    ('Gertrude', 'Jekyll', 'gertrude.jekyll@lnhm.co.uk', '001-481-273-3691x127'),
+    ('Eliza', 'Andrews', 'eliza.andrews@lnhm.co.uk', '(846)669-6651x75948');
 
-
-INSERT INTO country
+INSERT INTO beta.country
     (country_code, country_name) 
 VALUES
     ('AF', 'Afghanistan'),
