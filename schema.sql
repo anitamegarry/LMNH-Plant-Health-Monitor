@@ -33,7 +33,7 @@ CREATE TABLE beta.botanist (
 CREATE TABLE beta.plant (
     plant_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     botanist_id SMALLINT NOT NULL,
-    species_id BIGINT NOT NULL,
+    species_id SMALLINT NOT NULL,
     country_id SMALLINT NOT NULL,
     CONSTRAINT FK_plant_botanist FOREIGN KEY (botanist_id) REFERENCES beta.botanist(botanist_id),
     CONSTRAINT FK_plant_species FOREIGN KEY (species_id) REFERENCES beta.species(species_id),
