@@ -1,58 +1,57 @@
-SET datestyle TO 'DMY';
-DROP TABLE IF EXISTS country;
-DROP TABLE IF EXISTS species;
-DROP TABLE IF EXISTS recording;
-DROP TABLE IF EXISTS botanist;
-DROP TABLE IF EXISTS plant;
+
+USE plants;
+GO
+
+SET DATEFORMAT dmy;
+
+IF OBJECT_ID('beta.recording', 'U') IS NOT NULL DROP TABLE beta.recording;
+IF OBJECT_ID('beta.plant', 'U') IS NOT NULL DROP TABLE beta.plant;
+IF OBJECT_ID('beta.country', 'U') IS NOT NULL DROP TABLE beta.country;
+IF OBJECT_ID('beta.species', 'U') IS NOT NULL DROP TABLE beta.species;
+IF OBJECT_ID('beta.botanist', 'U') IS NOT NULL DROP TABLE beta.botanist;
 
 
-CREATE TABLE plant (
-    plant_id SMALLINT GENERATED ALWAYS AS IDENTITY,
-    botanist_id SMALLINT NOT NULL,
-    species_id BIGINT NOT NULL,
-    country_id SMALLINT NOT NULL,
-    PRIMARY KEY (plant_id)
-    FOREIGN KEY (botanist_id) REFERENCES botanist(botanist_id),
-    FOREIGN KEY (species_id) REFERENCES species(species_id),
-    FOREIGN KEY (country_id) REFERENCES country(country_id)
+CREATE TABLE beta.country (
+    country_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
+    country_code VARCHAR(2) NOT NULL UNIQUE,
+    country_name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE botanist (
-    botanist_id SMALLINT GENERATED ALWAYS AS IDENTITY,
+CREATE TABLE beta.species (
+    species_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
+    plant_name VARCHAR(30) UNIQUE
+);
+
+CREATE TABLE beta.botanist (
+    botanist_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     botanist_first_name VARCHAR(20) NOT NULL,
     botanist_last_name VARCHAR(20) NOT NULL,
     botanist_email VARCHAR(30) NOT NULL UNIQUE,
     botanist_phone_number VARCHAR(20)
-    PRIMARY KEY (botanist_id)
 );
 
-CREATE TABLE recording (
-    recording_id BIGINT GENERATED ALWAYS AS IDENTITY,
+CREATE TABLE beta.plant (
+    plant_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
+    botanist_id SMALLINT NOT NULL,
+    species_id BIGINT NOT NULL,
+    country_id SMALLINT NOT NULL,
+    CONSTRAINT FK_plant_botanist FOREIGN KEY (botanist_id) REFERENCES beta.botanist(botanist_id),
+    CONSTRAINT FK_plant_species FOREIGN KEY (species_id) REFERENCES beta.species(species_id),
+    CONSTRAINT FK_plant_country FOREIGN KEY (country_id) REFERENCES beta.country(country_id)
+);
+
+CREATE TABLE beta.recording (
+    recording_id BIGINT IDENTITY(1,1) PRIMARY KEY,
     plant_id SMALLINT NOT NULL,
-    recording_taken TIMESTAMPTZ NOT NULL,
-    last_watered TIMESTAMPTZ,
+    recording_taken DATETIME NOT NULL,
+    last_watered DATETIME,
     soil_moisture FLOAT,
     temperature FLOAT,
-    PRIMARY KEY (recording_id)
-    FOREIGN KEY (plant_id) REFERENCES plant(plant_id)
+    CONSTRAINT FK_recording_plant FOREIGN KEY (plant_id) REFERENCES beta.plant(plant_id)
 );
 
 
-CREATE TABLE species (
-    species_id SMALLINT GENERATED ALWAYS AS IDENTITY,
-    plant_name VARCHAR(30) UNIQUE,
-    PRIMARY KEY (species_id)
-);
-
-CREATE TABLE country (
-    country_id SMALLINT GENERATED ALWAYS AS IDENTITY,
-    country_code VARCHAR(2) NOT NULL UNIQUE,
-    country_name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (country_id)
-);
-
-
-INSERT INTO species 
+INSERT INTO beta.species 
     (plant_name)
 VALUES
     ('epipremnum aureum'),
@@ -72,7 +71,6 @@ VALUES
     ('euphorbia cotinifolia'),
     ('ipomoea batatas'),
     ('cuphea david verity'),
-    ('ipomoea batatas'),
     ('manihot esculenta variegata'),
     ('musa basjoo'),
     ('salvia splendens'),
@@ -97,25 +95,21 @@ VALUES
     ('amaryllis'),
     ('caladium bicolor'),
     ('chlorophytum comosum'),
-    ('arauacaria heterophylla'),
+    ('araucaria heterophylla'),
     ('begonia'),
     ('medinilla magnifica'),
     ('calliandra haematocephala'),
     ('zamioculcas zamiifolia'),
-    ('crassula ovata'),
+    ('crassula ovata');
 
-
-
-
-INSERT INTO botanist
+INSERT INTO beta.botanist
     (botanist_first_name, botanist_last_name, botanist_email, botanist_phone_number)
 VALUES
-    ('Carl','Linnaeus','carl.linnaeus@lnhm.co.uk','(146)994-1635x35992')
-    ('Gertrude','Jekyll','gertrude.jekyll@lnhm.co.uk','001-481-273-3691x127')
-    ('Eliza','Andrews','eliza.andrews@lnhm.co.uk','(846)669-6651x75948')
+    ('Carl', 'Linnaeus', 'carl.linnaeus@lnhm.co.uk', '(146)994-1635x35992'),
+    ('Gertrude', 'Jekyll', 'gertrude.jekyll@lnhm.co.uk', '001-481-273-3691x127'),
+    ('Eliza', 'Andrews', 'eliza.andrews@lnhm.co.uk', '(846)669-6651x75948');
 
-
-INSERT INTO country
+INSERT INTO beta.country
     (country_code, country_name) 
 VALUES
     ('AF', 'Afghanistan'),
