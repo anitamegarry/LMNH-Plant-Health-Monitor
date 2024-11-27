@@ -54,7 +54,6 @@ def initialise_dataframe() -> pd.DataFrame:
         "botanist_email": pd.Series(dtype=str),
         "botanist_phone_number": pd.Series(dtype=str),
         "plant_name": pd.Series(dtype=str),
-        "plant_scientific_name": pd.Series(dtype=str),
         "recording_taken": pd.Series(dtype=str),
         "last_watered": pd.Series(dtype=str),
         "soil_moisture": pd.Series(dtype=float),
