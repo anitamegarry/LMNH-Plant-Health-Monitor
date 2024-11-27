@@ -1,4 +1,5 @@
-"""Connects to Microsoft SQL Server, extracts all data and stores it as a .csv file"""
+"""Connects to Microsoft SQL Server, extracts all data, 
+stores it as a .csv file and uploads to S3"""
 
 # pylint: disable=E1101
 
@@ -83,8 +84,8 @@ def extract_data() -> None:
 
 def get_client():
     """Returns S3 client"""
-    access_key_id = os.getenv("access_key_ID")
-    secret_access_key = os.getenv("secret_access_key")
+    access_key_id = os.getenv("ACCESS_KEY_ID")
+    secret_access_key = os.getenv("SECRET_ACCESS_KEY")
     client = boto3.client(
         's3',
         aws_access_key_id=access_key_id,
@@ -94,5 +95,6 @@ def get_client():
 
 
 if __name__ == "__main__":
-    print(get_connection())
-    print(extract_data())
+    extract_data()
+    s3 = get_client()
+    s3.upload_file(CSV_FILE, os.getenv("BUCKET_NAME"), CSV_FILE)
