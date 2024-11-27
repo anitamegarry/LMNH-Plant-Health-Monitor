@@ -10,4 +10,4 @@ To run the pipeline within a local environment, execute the etl.py script with t
  - python3 etl.py
 
 To convert the pipeline script into a dockerised container, ready to upload to an AWS ECR, run the following command **from the root project directory**:
- - docker build -t [image-name] -f pipeline/dockerfile --platform "linux/amd64" .
+ - docker build -t [image name] -f pipeline/dockerfile --platform "linux/amd64" .
