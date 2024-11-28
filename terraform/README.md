@@ -1,4 +1,28 @@
-These terraform files implement the following AWS resources:
+### These terraform files implement the following AWS resources:
 
- - **s3_bucket.tf**
-    - "c14-plant-practitioners-long-term-storage" - For long term storage of plant data files as CSVs
+- **`s3_bucket.tf`**
+   - `c14-plant-practitioners-long-term-storage` - For long term storage of plant data files as CSVs
+  
+- **`etl_ecr.tf`**
+  - `c14_plant_practitioners_etl_ecr` - ECR for hosting ETL docker image
+  - `c14_plant_practitioners_etl_ecr_lifecycle_policy` - Lifecycle policy keeping only the 30 latest images pushed to the ECR
+- **`etl_eventbridge_sched.tf`**
+  - `c14_plant_practitioners_etl_lambda_role` - defines the iam role
+  - `c14_plant_practitioners_etl_lambda_function` - defines the Lambda function
+  - `c14_plant_practitioners_etl_rule` - defines the eventbridge rule (every minute)
+  - `c14_plant_practitioners_etl_target` - defines the target for the eventbridge rule
+  - `c14_plant_practitioners_etl_lambda_permission` - allows eventbridge to trigger the lambda function
+  - `c14_plant_practitioners_etl_policy` - defines iam role persmissions
+  - `c14_plant_practitioners_etl_policy_attachment` - attaches iam policy to role
+  
+- **`data_backup_ecr.tf`** 
+  - `c14_plant_practitioners_data_backup_ecr` - ECR for hosting data backup script docker image
+  - `c14_plant_practitioners_data_backup_ecr_lifecycle_policy` - Lifecycle policy keeping only the 30 latest images pushed to the ECR
+  
+- **`data_backup_eventbridge_sched.tf`**
+  - This contains the same resource types as in `etl_eventbridge_sched.tf`, but are separate resource instances for handling the data backup script which is triggered every 24 hours.
+- **`dashboard_ecr.tf`**
+  - `c14_plant_practitioners_dashboard_ecr` - ECR for hosting streamlit dashboard docker image
+- **`ecs_security_group.tf`**
+  - `c14_plant_practitioners_security_group` - security group currently allowing all inbound and outbound traffic 
+- 
