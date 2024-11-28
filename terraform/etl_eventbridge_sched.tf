@@ -20,7 +20,7 @@ resource "aws_lambda_function" "c14_plant_practitioners_etl_lambda_function" {
   function_name = "c14_plant_practitioners_etl_lambda"
   role          = aws_iam_role.c14_plant_practitioners_etl_lambda_role.arn
   package_type  = "Image"
-  image_uri     = "[DOCKER IMAGE URI HERE]"
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c14_plant_practitioners_etl_ecr@sha256:772cf4815c027214c9500e9531f844baed040736a2802e1626b4c3d8fb551f7f"
     vpc_config {
     subnet_ids         = ["subnet-0497831b67192adc2", "subnet-0acda1bd2efbf3922", "subnet-0465f224c7432a02e"]  
     security_group_ids = [aws_security_group.c14_plant_practitioners_security_group.id]
