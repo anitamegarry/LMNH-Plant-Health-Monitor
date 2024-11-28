@@ -10,7 +10,7 @@ def convert_columns_to_datetime(dataframe: pd.DataFrame) -> pd.DataFrame:
     dataframe['recording_taken'] = pd.to_datetime(
         dataframe['recording_taken'], errors='coerce').dt.tz_localize('UTC', ambiguous='NaT')
     dataframe['last_watered'] = pd.to_datetime(
-        dataframe['last_watered'], errors='coerce').dt.tz_convert('UTC')
+        dataframe['last_watered'], errors='coerce').dt.tz_localize('UTC', ambiguous='NaT')
 
     return dataframe
 

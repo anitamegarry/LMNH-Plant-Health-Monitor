@@ -11,8 +11,9 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY .env .
 COPY pipeline/extract.py .
 COPY pipeline/transform.py .
+COPY pipeline/load.py .
+COPY pipeline/etl.py .
 
 CMD ["python3.9", "etl.py"]
