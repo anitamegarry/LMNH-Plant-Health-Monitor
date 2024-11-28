@@ -1,5 +1,5 @@
-"""Connects to Microsoft SQL Server, extracts all data, 
-stores it as a .csv file and uploads to S3"""
+"""Connects to Microsoft SQL Server, extracts all data,
+stores it as a .csv file, uploads to S3 and resets the database"""
 
 # pylint: disable=E1101
 
@@ -94,7 +94,31 @@ def get_client():
     return client
 
 
+def truncate_table():
+    """Truncates tables within the schema"""
+    conn = get_connection()
+    if not conn:
+        return None
+    try:
+        conn = get_connection()
+        cursor = get_cursor(conn)
+        cursor.execute(f"TRUNCATE TABLE {SCHEMA}.recording")
+        print("Table truncated.")
+        cursor.execute("""DELETE FROM beta.plant;
+                       DBCC CHECKIDENT ('beta.plant', RESEED, 0);""")
+        print("Table truncated.")
+        conn.commit()
+        return None
+    except pymssql.Error as e:
+        print(f"Error executing query: {e}")
+        return None
+    finally:
+        conn.close()
+        print("Connection closed.")
+
+
 if __name__ == "__main__":
     extract_data()
     s3 = get_client()
     s3.upload_file(CSV_FILE, os.getenv("BUCKET_NAME"), CSV_FILE)
+    truncate_table()

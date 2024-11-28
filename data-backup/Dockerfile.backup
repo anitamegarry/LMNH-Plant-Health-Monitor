@@ -7,17 +7,9 @@ RUN apt-get update && apt-get install -y \
     freetds-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" \
-    brew install sqlcmd \
-    rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY extract_from_database.py .
-COPY store_data_longterm_and_reset_database.sh .
-COPY schema.sql .
 
-ENV PATH="$PATH:/opt/mssql-tools/bin"
-
-CMD ["bash", "store_data_longterm_and_reset_database.sh"]
+CMD ["python3.9", "extract_from_database.py"]
