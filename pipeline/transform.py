@@ -8,9 +8,22 @@ def convert_columns_to_datetime(dataframe: pd.DataFrame) -> pd.DataFrame:
     """Converts recording_taken and last_watered
        To type datetime."""
     dataframe['recording_taken'] = pd.to_datetime(
-        dataframe['recording_taken'], errors='coerce').dt.tz_localize('UTC', ambiguous='NaT')
+        dataframe['recording_taken'], errors='coerce')
+    if dataframe['recording_taken'].dt.tz is None:
+        dataframe['recording_taken'] = dataframe['recording_taken'].dt.tz_localize(
+            'UTC')
+    else:
+        dataframe['recording_taken'] = dataframe['recording_taken'].dt.tz_convert(
+            'UTC')
+
     dataframe['last_watered'] = pd.to_datetime(
-        dataframe['last_watered'], errors='coerce').dt.tz_localize('UTC', ambiguous='NaT')
+        dataframe['last_watered'], errors='coerce')
+    if dataframe['last_watered'].dt.tz is None:
+        dataframe['last_watered'] = dataframe['last_watered'].dt.tz_localize(
+            'UTC')
+    else:
+        dataframe['last_watered'] = dataframe['last_watered'].dt.tz_convert(
+            'UTC')
 
     return dataframe
 
