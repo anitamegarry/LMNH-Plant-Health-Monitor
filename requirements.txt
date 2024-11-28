@@ -1,6 +1,7 @@
 requests
 pandas
 pytest
+pytest-mock
 pylint
 coverage
 python-dotenv
