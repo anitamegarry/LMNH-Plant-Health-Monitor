@@ -17,7 +17,7 @@ resource "aws_ecr_lifecycle_policy" "c14_plant_practitioners_dashboard_ecr_lifec
             "rulePriority": 1,
             "description": "Keep last 30 images",
             "selection": {
-                "tagStatus": "tagged",
+                "tagStatus": "any",
                 "countType": "imageCountMoreThan",
                 "countNumber": 30
             },
