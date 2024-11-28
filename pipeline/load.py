@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import transform as tf
 
 
-def get_connection():
+def get_connection() -> object:
     """Gets connection to Microsoft SQL server"""
     return pymssql.connect(database=os.getenv("DB_NAME"),
                            user=os.getenv("DB_USER"),
@@ -16,7 +16,7 @@ def get_connection():
                            password=os.getenv("DB_PASSWORD"))
 
 
-def get_cursor(connection):
+def get_cursor(connection: object) -> object:
     """Gets cursor"""
     return connection.cursor()
 
