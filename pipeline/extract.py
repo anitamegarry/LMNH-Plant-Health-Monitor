@@ -12,7 +12,7 @@ TOTAL_NUMBER_OF_PLANTS = 50
 
 def get_plant_data(plant_id: int) -> dict:
     """GET request to collect plant data from API."""
-    response = requests.get(URL + str(plant_id), timeout=10)
+    response = requests.get(URL + str(plant_id), timeout=30)
     if response.status_code == 200:
         return response.json()
     return {"error": response.status_code,
@@ -54,7 +54,6 @@ def initialise_dataframe() -> pd.DataFrame:
         "botanist_email": pd.Series(dtype=str),
         "botanist_phone_number": pd.Series(dtype=str),
         "plant_name": pd.Series(dtype=str),
-        "plant_scientific_name": pd.Series(dtype=str),
         "recording_taken": pd.Series(dtype=str),
         "last_watered": pd.Series(dtype=str),
         "soil_moisture": pd.Series(dtype=float),

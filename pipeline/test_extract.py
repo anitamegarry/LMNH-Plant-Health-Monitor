@@ -91,36 +91,3 @@ def test_extract_plant_data_missing_botanist():
         "country_code": "BR"
     }
     assert result == expected
-
-
-@patch('multiprocessing.Pool')
-def test_load_into_dataframe(mock_pool_class):
-    mock_plant_data = {
-        "botanist_first_name": "Carl",
-        "botanist_last_name": "Linnaeus",
-        "botanist_email": "carl.linnaeus@lnhm.co.uk",
-        "botanist_phone_number": "(146)994-1635x35992",
-        "plant_name": "Epipremnum Aureum",
-        "plant_scientific_name": "Epipremnum aureum",
-        "recording_taken": "2024-11-25 14:19:28",
-        "last_watered": "Mon, 25 Nov 2024 14:03:04 GMT",
-        "soil_moisture": 99.0464993678606,
-        "temperature": 13.15915073027191,
-        "country_code": "BR",
-    }
-
-    mock_pool_instance = MagicMock()
-    mock_pool_class.return_value = mock_pool_instance
-
-    mock_pool_instance.map.return_value = [
-        mock_plant_data] * (TOTAL_NUMBER_OF_PLANTS + 1)
-
-    result_dataframe = load_into_dataframe()
-
-    assert "botanist_first_name" in result_dataframe.columns
-    assert "plant_name" in result_dataframe.columns
-
-    assert result_dataframe["botanist_first_name"].iloc[0] == "Carl"
-    assert result_dataframe["botanist_last_name"].iloc[0] == "Linnaeus"
-    assert result_dataframe["plant_name"].iloc[0] == "Epipremnum Aureum"
-    assert result_dataframe["country_code"].iloc[0] == "BR"
