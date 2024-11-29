@@ -21,12 +21,20 @@ To execute a data backup within a local environment, run the following command:
 
 A docker image can be created with `dockerfile`. On activation, this will install all the requirements and run the `extract_from_database.py` file in a controlled environment.
 
-To create and use the Docker image, follow these steps:
+To create and test the Docker image locally, follow these steps:
 
 1. Build the Docker image:
 
-docker build -t data-backup .
+docker build -t data-backup-local --platform "linux/amd64" .
 
 2. Run the Docker container:
 
-docker run data-backup
+docker run -p 9000:8080 --env-file .env data-backup-local
+
+3. Test the container:
+
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
+
+To run the image on AWS:
+
+Follow the push instructions on your AWS ECR repository, ensuring the tag --platform "linux/amd64" is used.
