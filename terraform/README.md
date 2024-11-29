@@ -2,11 +2,16 @@
 
 This folder contains the Terraform scripts necessary to provision the AWS infrastructure for the ETL pipeline, the data backup script, and the streamlit dashboard.
 
+### Architecture Decisions
+- AWS Lambda was chosen to run both the ETL and the backup pipeline for cost-efficiency. Since these are relatively short tasks and cost is only accrued when the Lambda is running, this should keep costs down. Lambda was ultimately chosen over a Fargate for simpler management of scalability.
+- The Streamlit dashboard for visualisation is deployed as an ECS service to ensure it runs constantly, allowing users to access the dashboard at any given time. ECS can also be auto-scaled to allow handling of changes in user traffic.
+- An AWS S3 Bucket was chosen for long-term storage of data older than 24 hours. Though slightly more expensive than other long-term storage services such as Glacier, it is more cost-effective given that the users may need periodic access to the data - S3 allows this without incurring extra costs.
+
+
 ### Prerequisites
 Before running the Terraform scripts, make sure you have Terraform installed. You also need to configure your AWS credentials. 
 
 To install Terraform, run: `brew install terraform`
-
 
 ### Execution
 To deploy the infrastructure, run the following Terraform commands from the root project directory:
