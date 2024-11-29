@@ -43,7 +43,8 @@ JOIN
     {SCHEMA}.botanist ON plant.botanist_id = botanist.botanist_id;
 """
 
-CSV_FILE = f"{datetime.today().strftime('%Y-%m-%d')}_plant_monitor_data.csv"
+CSV_FILE = f"""/tmp/{datetime.today().strftime('%Y-%m-%d')
+                     }_plant_monitor_data.csv"""
 
 
 def get_connection():
