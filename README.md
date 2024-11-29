@@ -13,7 +13,6 @@
   - [Contributions](#contributions)
     - [Guidelines](#guidelines)
   - [Acknowledgements](#acknowledgements)
-    - [Terraform Configuration:](#terraform-configuration)
 
 ## Overview
 
@@ -122,10 +121,10 @@ Be respectful and constructive in discussions.
 ## Acknowledgements
 
 1. Project Contributors
-   - [Anita Megarry](https://github.com/anitamegarry)
-   - [Ben Trzcinski](https://github.com/bentrzcinski)
-   - [Fahad Rahman](https://github.com/Fahi28)
    - [Jiulian Gutierrez](https://github.com/jiuliangut)
+   - [Anita Megarry](https://github.com/anitamegarry)
+   - [Fahad Rahman](https://github.com/Fahi28)
+   - [Ben Trzcinski](https://github.com/bentrzcinski)
 
 2. Open Source Libraries
    - **Open Source Libraries**: This project relies on several open-source libraries, including:
@@ -135,13 +134,3 @@ Be respectful and constructive in discussions.
      - [pytest](https://docs.pytest.org/en/stable/) – A testing framework for Python, used for running unit tests in this project.
      - [pymssql](https://pymssql.readthedocs.io/en/latest/) - A Python library for connecting to Microsoft SQL Server, used to interact with the RDS database.
 
-### Terraform Configuration:
-The `terraform` folder contains all files for terraform infrastructure:
-- `provider.tf` - defines the AWS region.
-- `s3_bucket.tf` - provisioning the AWS S3 bucket for long-term data storage (data older than 24hrs).
-  
-One script for each of the 3 ECRs utilised in this project:
-- `etl_ecr.tf` - contains the image for the `ETL` script which is run every minute
-- `data_backup_ecr.tf` - contains the image for the backup script which moves data to long-term storage every 24hrs. 
-- `dashboard_ecr.tf` - contains the image to run the streamlit dashboard for visualisations
-- Each ECR has a lifecycle policy which keeps only the 30 most recently pushed images.
