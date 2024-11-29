@@ -41,6 +41,9 @@ To deploy the infrastructure, run the following Terraform commands from the root
   - This contains the same resource types as in `etl_eventbridge_sched.tf`, but are separate resource instances for handling the data backup script which is triggered every 24 hours.
 - **`dashboard_ecr.tf`**
   - `c14_plant_practitioners_dashboard_ecr` - ECR for hosting streamlit dashboard docker image
+- **`dashboard_ecs.tf`**
+  - `c14_plant_practitioners_task_definition` - Task definition for dashboard code image
+  - `c14_plant_practitioners_log_group` - Log group for monitoring task definition health
 - **`ecs_security_group.tf`**
   - `c14_plant_practitioners_security_group` - security group currently allowing all inbound and outbound traffic 
 - 
