@@ -7,3 +7,5 @@ coverage
 python-dotenv
 boto3
 pymssql
+altair
+streamlit

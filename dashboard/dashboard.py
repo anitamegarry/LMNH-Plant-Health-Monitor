@@ -6,145 +6,126 @@ see live plant status data ad access historical data
 import altair as alt
 import streamlit as st
 import pandas as pd
-from extract import download_truck_data_files, collate_data, clean_data, tidy_up
-from pipeline import db_connect, db_close
+import os
+from datetime import datetime, timedelta
+import pymssql
 from dotenv import load_dotenv
-from os import environ as ENV
+import boto3
+
+load_dotenv()
 
 
-def display_title() -> None:
-    st.title("T3 Truck Data Dashboard")
+def get_connection() -> None:
+    """Gets connection to Microsoft SQL server"""
+    return pymssql.connect(database=os.getenv("DB_NAME"),
+                           user=os.getenv("DB_USER"),
+                           server=os.getenv("DB_HOST"),
+                           password=os.getenv("DB_PASSWORD"))
 
 
-def filter_data(truck_data: pd.DataFrame):
+def setup_filters() -> None:
+    """Creates the time and plant filters and displays them to the dashboard"""
+    start_time = st.time_input("Start Time", value=None)
+    end_time = st.time_input("End Time", value=None)
+
+    unique_plants = [1, 2, 3]
+    selected_plants = st.multiselect(
+        "Selected Plant IDs", unique_plants, default=unique_plants)
+
+
+def load_filtered_data() -> pd.DataFrame:
     """
-    Filter the data according to the date range and
-    truck choices made by the user
+    Filter the live data according to the time range and
+    plant choices made by the user
     """
-    start_date = st.date_input("Start Date", truck_data['timestamp'].min())
-    end_date = st.date_input("End Date", truck_data['timestamp'].max())
+    SCHEMA = os.getenv("SCHEMA_NAME")
 
-    unique_trucks = sorted(truck_data['truck_id'].unique())
-    selected_trucks = st.multiselect(
-        "Selected Truck IDs", unique_trucks, default=unique_trucks)
+    query = f"""
+    SELECT
+        recording.recording_id,
+        recording.recording_taken,
+        recording.last_watered,
+        recording.soil_moisture,
+        recording.temperature,
+        plant.plant_id,
+        species.plant_name,
+        country.country_name,
+        botanist.botanist_first_name,
+        botanist.botanist_last_name
+    FROM {SCHEMA}.recording
+    JOIN {SCHEMA}.plant ON recording.plant_id = plant.plant_id
+    JOIN {SCHEMA}.species ON plant.species_id = species.species_id
+    JOIN {SCHEMA}.country ON plant.country_id = country.country_id
+    JOIN {SCHEMA}.botanist ON plant.botanist_id = botanist.botanist_id;
+    """
 
-    filtered_data = truck_data[
-        (truck_data['timestamp'] >= pd.to_datetime(start_date)) &
-        (truck_data['timestamp'] <= pd.to_datetime(end_date)) &
-        (truck_data['truck_id'].isin(selected_trucks))
-    ]
+    conn = get_connection()
+    if not conn:
+        return None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    return filtered_data
+        cursor.execute(query)
+        result = cursor.fetchall()
+        filtered_data = pd.DataFrame(result)
 
+        column_titles = [description[0] for description in cursor.description]
+        filtered_data.columns = column_titles
+        filtered_data['recording_taken'] = pd.to_datetime(
+            filtered_data['recording_taken'])
 
-def load_local_data() -> pd.DataFrame:
-    """Loads all the truck data into a pandas dataframe"""
-    # Getting the truck data csv from the S3
-    download_truck_data_files()
-    collate_data()
-    clean_data()
-    tidy_up()
+        return filtered_data
 
-    # Loading it into a pandas df
-    truck_data = pd.read_csv("data/historical_truck_data.csv")
-
-    # Cleaning it up a bit
-    truck_data['timestamp'] = pd.to_datetime(truck_data['timestamp'])
-
-    return truck_data
-
-
-def generate_transaction_count_time_chart(truck_data: pd.DataFrame) -> alt.Chart:
-    """Generates a transaction count over time bar graph"""
-    transaction_count_time = filtered_data.groupby(
-        truck_data['timestamp'].dt.date).size().reset_index(name='count')
-
-    transaction_count_time_chart = alt.Chart(transaction_count_time).mark_bar(color='#006666', size=30).encode(
-        alt.Y('count:Q').title('Number of Transactions'),
-        alt.X('timestamp:T', title='Date', axis=alt.Axis(format='%b %d'))
-    ).properties(title="Transaction Count Over Time")
-
-    return transaction_count_time_chart
-
-
-def generate_transaction_value_time_chart(truck_data: pd.DataFrame) -> alt.Chart:
-    """Generates a transaction value over time area plot"""
-    transaction_value_time = truck_data.groupby(truck_data['timestamp'].dt.date)[
-        'total'].sum().reset_index(name='total_value')
-
-    transaction_value_time_chart = alt.Chart(transaction_value_time).mark_area(interpolate='linear', color='#006666').encode(
-        x=alt.X('timestamp:T', title='Date', axis=alt.Axis(format='%b %d')),
-        y=alt.Y('total_value:Q', title='Total Transaction Value')
-    ).properties(title="Total Transaction Value Over Time")
-
-    return transaction_value_time_chart
+    except pymssql.Error as e:
+        print(f"Error executing query: {e}")
+        return None
+    finally:
+        conn.close()
 
 
-def generate_card_vs_cash_chart(truck_data: pd.DataFrame) -> alt.Chart:
-    """Generates a total card vs total cash transactions pie chart"""
-    card_vs_cash = truck_data.groupby(
-        "type")["type"].count().reset_index(name='value')
-
-    card_vs_cash_chart = alt.Chart(card_vs_cash).mark_arc().encode(
-        theta=alt.Theta(field='value', type='quantitative'),
-        color=alt.Color(field='type', type='nominal', title="Type",
-                        scale=alt.Scale(range=['#004C4C', '#66B2B2']))
-    ).properties(title="Total Transactions (Cash vs Card)")
-
-    card_vs_cash_labels = card_vs_cash_chart.mark_text(radius=50, fill='white', fontSize=16).encode(
-        theta=alt.Theta(field='value', type='quantitative', stack=True),
-        text=alt.Text('value:Q')
+def generate_soil_moisture_time_chart(plant_data: pd.DataFrame) -> alt.Chart:
+    """Generates a soil moisture over time line graph"""
+    soil_moisture_plot = alt.Chart(plant_data).mark_line().encode(
+        x='recording_taken:T',
+        y='soil_moisture:Q',
+        color='plant_id:N'
+    ).properties(
+        title="Soil Moisture Over Time"
     )
 
-    card_vs_cash_combined = alt.layer(card_vs_cash_chart, card_vs_cash_labels)
-
-    return card_vs_cash_combined
+    return soil_moisture_plot
 
 
-def generate_card_reader_chart(truck_data: pd.DataFrame) -> alt.Chart:
-    """Generates a pie chart showing what percentage of trucks have card readers"""
-    # Graph 4 (TEMPORARILY UNAVAILABLE WHILE USING LOCAL CSV)
-    card_machines = truck_data.groupby(
-        "type")["type"].count().reset_index(name='value')
-
-    card_machines_chart = alt.Chart(card_machines).mark_arc().encode(
-        theta=alt.Theta(field='value', type='quantitative'),
-        color=alt.Color(field='type', type='nominal', title="Type",
-                        scale=alt.Scale(range=['#004C4C', '#66B2B2']))
-    ).properties(title="Total Transactions (Cash vs Card)")
-
-    card_machines_labels = card_machines_chart.mark_text(radius=50, fill='white', fontSize=16).encode(
-        theta=alt.Theta(field='value', type='quantitative', stack=True),
-        text=alt.Text('value:Q')
+def generate_temperature_time_chart(truck_data: pd.DataFrame) -> alt.Chart:
+    """Generates a temperature over time line graph"""
+    temperature_plot = alt.Chart(plant_data).mark_line().encode(
+        x='recording_taken:T',
+        y='temperature:Q',
+        color='plant_id:N'
+    ).properties(
+        title="Temperature Over Time"
     )
 
-    card_machines_combined = alt.layer(
-        card_machines_chart, card_machines_labels)
-
-    return card_machines_combined
+    return temperature_plot
 
 
-def display_plots(chart1: alt.Chart, chart2: alt.Chart, chart3: alt.Chart, chart4: alt.Chart) -> None:
+def display_title(title) -> None:
+    st.title(title)
+
+
+def display_plots(chart1: alt.Chart, chart2: alt.Chart) -> None:
     """Displays all the plots to our dashboard"""
-    col1, col2, col3 = st.columns([0.55, 0.1, 0.35])
-    with col1:
-        st.altair_chart(chart1, use_container_width=True)
-    with col3:
-        st.altair_chart(chart2, use_container_width=True)
-
     col1, col2, col3 = st.columns([0.35, 0.1, 0.55])
-    with col1:
-        st.altair_chart(chart3, use_container_width=True)
-    with col3:
-        st.altair_chart(chart4, use_container_width=True)
+    st.altair_chart(chart1, use_container_width=True)
+    st.altair_chart(chart2, use_container_width=True)
 
 
 if __name__ == "__main__":
-    display_title()
-    data = load_local_data()
-    filtered_data = filter_data(data)
-    plot1 = generate_transaction_count_time_chart(filtered_data)
-    plot2 = generate_card_vs_cash_chart(filtered_data)
-    plot3 = generate_card_reader_chart(filtered_data)
-    plot4 = generate_transaction_value_time_chart(filtered_data)
-    display_plots(plot1, plot2, plot3, plot4)
+    display_title("LHNH PLant Monitoring Dashboard")
+    setup_filters()
+    plant_data = load_filtered_data()
+    plot1 = generate_soil_moisture_time_chart(plant_data)
+    plot2 = generate_temperature_time_chart(plant_data)
+    display_plots(plot1, plot2)
+    print(plant_data["plant_id"])
