@@ -1,6 +1,6 @@
 """
 The file responsible for hosting the dashboard where users can
-see live plant status data ad access historical data
+see live plant status data ad access historical data 
 """
 
 # pylint: disable=E1101
