@@ -51,33 +51,17 @@ def get_all_plant_foreign_keys(db_cursor: object,
     return foreign_keys
 
 
-def insert_into_plant_table(connection: object, db_cursor: object, dataframe: pd.DataFrame):
-    """Inserts necessary data from DataFrame into plants table and returns their primary key."""
-    foreign_keys = get_all_plant_foreign_keys(db_cursor, dataframe)
-    plant_ids = []
-    for botanist_id, species_id, country_id in foreign_keys:
-        db_cursor.execute("""
-                        INSERT INTO plant (botanist_id, species_id, country_id) VALUES
-                        (%s, %s, %s)""",
-                          (botanist_id, species_id, country_id))
-        connection.commit()
-        db_cursor.execute("SELECT SCOPE_IDENTITY()")
-        plant_ids.append(db_cursor.fetchone()[0])
-    return plant_ids
-
-
 def insert_into_recording_table(connection: object,
                                 db_cursor: object,
-                                dataframe: pd.DataFrame,
-                                plant_ids: List[int]) -> None:
+                                dataframe: pd.DataFrame) -> None:
     """Insert necessary data from DataFrame into the recording table."""
-    for index, row in dataframe.iterrows():
-        plant_id = plant_ids[index]
 
-        recording_taken = row['recording_taken']
-        last_watered = row['last_watered']
-        soil_moisture = row['soil_moisture']
-        temperature = row['temperature']
+    for row in dataframe.itertuples(index=False):
+        plant_id = row.plant_id
+        recording_taken = row.recording_taken
+        last_watered = row.last_watered
+        soil_moisture = row.soil_moisture
+        temperature = row.temperature
 
         db_cursor.execute("""
                         INSERT INTO recording (plant_id, recording_taken, last_watered, soil_moisture, temperature) VALUES
@@ -92,8 +76,7 @@ def main() -> None:
     plant_dataframe = tf.main()
     conn = get_connection()
     cursor = get_cursor(conn)
-    plants = insert_into_plant_table(conn, cursor, plant_dataframe)
-    insert_into_recording_table(conn, cursor, plant_dataframe, plants)
+    insert_into_recording_table(conn, cursor, plant_dataframe)
 
 
 if __name__ == "__main__":
