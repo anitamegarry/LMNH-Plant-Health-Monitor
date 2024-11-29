@@ -3,15 +3,17 @@ The file responsible for hosting the dashboard where users can
 see live plant status data ad access historical data
 """
 
-from botocore.exceptions import NoCredentialsError, PartialCredentialsError
-import altair as alt
-import streamlit as st
-import pandas as pd
+# pylint: disable=E1101
+
 import os
-from datetime import datetime, timedelta, time, date
+from datetime import datetime, time, date
 import pymssql
 from dotenv import load_dotenv
 import boto3
+import botocore.exceptions
+import altair as alt
+import streamlit as st
+import pandas as pd
 
 load_dotenv()
 
@@ -29,29 +31,30 @@ def setup_filters() -> None:
     start_time = st.time_input("Start Time", value=None)
     end_time = st.time_input("End Time", value=None)
 
-    plant_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-                 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+    plant_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
     selected_plants = st.multiselect(
         "Selected Plant IDs", plant_ids, default=0)
 
     return start_time, end_time, selected_plants
 
 
-def load_filtered_data(start_time: time, end_time: time, selected_plants: list[int]) -> pd.DataFrame:
+def load_filtered_data(start_time: time, end_time: time, selected: list[int]) -> pd.DataFrame:
     """
     Filter the live data according to the time range and
     plant choices made by the user
     """
     schema = os.getenv("SCHEMA_NAME")
 
-    if start_time == None:
+    if start_time is None:
         start_time = time(0, 0, 0)
-    if end_time == None:
+    if end_time is None:
         end_time = time(23, 59, 59)
-    if len(selected_plants) == 1:
-        selected_plants = (selected[0], selected[0])
+    if len(selected) == 1:
+        selected = (selected[0], selected[0])
     if len(selected) == 0:
-        selected_plants = (-1, -1)
+        selected = (-1, -1)
 
     query = f"""
     SELECT
@@ -72,7 +75,7 @@ def load_filtered_data(start_time: time, end_time: time, selected_plants: list[i
     JOIN {schema}.botanist ON plant.botanist_id = botanist.botanist_id
     WHERE CONVERT(TIME, recording.recording_taken) > '{start_time}'
     AND CONVERT(TIME, recording.recording_taken) < '{end_time}'
-    AND plant.plant_id IN {tuple(selected_plants)};
+    AND plant.plant_id IN {tuple(selected)};
     """
 
     conn = get_connection()
@@ -118,7 +121,7 @@ def generate_soil_moisture_time_chart(plant_data: pd.DataFrame) -> alt.Chart:
     return soil_moisture_plot
 
 
-def generate_temperature_time_chart(truck_data: pd.DataFrame) -> alt.Chart:
+def generate_temperature_time_chart(plant_data: pd.DataFrame) -> alt.Chart:
     """Generates a temperature over time line graph"""
     temperature_plot = alt.Chart(plant_data).mark_line().encode(
         x=alt.X('recording_taken:T', axis=alt.Axis(title='Time of Recording')),
@@ -143,12 +146,14 @@ def display_plots(chart1: alt.Chart, chart2: alt.Chart) -> None:
 
 
 def download_from_s3(file_name):
+    """Download the given file from the long term S3 storage"""
     s3 = boto3.client('s3')
     try:
         s3.download_file(os.getenv("BUCKET_NAME"),
                          file_name, file_name)
         return file_name
-    except:
+    except (botocore.exceptions.NoCredentialsError, botocore.exceptions.ClientError) as e:
+        print("boto3 error: ", e)
         return None
 
 
@@ -158,6 +163,7 @@ def display_historic_download_title() -> None:
 
 
 def create_download_button(date_range: list[date]) -> None:
+    """Creates the logic and button for downloading historical data"""
     if len(date_range) == 2:
         if date_range[0] == date_range[1]:
             date_list = [date_range[0]]
@@ -183,17 +189,18 @@ def create_download_button(date_range: list[date]) -> None:
                 file_name = os.path.basename(file_formatted)
                 result = download_from_s3(file_name)
                 if result is not None:
-                    file = open(file_name, "rb")
-                    st.download_button(
-                        label=f"Click to Download {file_name}",
-                        data=file,
-                        file_name=file_name,
-                        mime="text/csv"
-                    )
+                    with open(file_name, "rb") as file:
+                        st.download_button(
+                            label=f"Click to Download {file_name}",
+                            data=file,
+                            file_name=file_name,
+                            mime="text/csv"
+                        )
     return None
 
 
 def create_date_range_selector() -> list[date]:
+    """Creates and displays the date range selector for downloading historic data"""
     today = datetime.now()
 
     start = date(2024, 1, 1)
@@ -211,13 +218,18 @@ def create_date_range_selector() -> list[date]:
     return date_range
 
 
-if __name__ == "__main__":
+def main():
+    """The main logic of the dashboard"""
     display_title("LHNH PLant Monitoring Dashboard")
-    start, end, selected = setup_filters()
-    plant_data = load_filtered_data(start, end, selected)
+    start, end, selected_plants = setup_filters()
+    plant_data = load_filtered_data(start, end, selected_plants)
     plot1 = generate_soil_moisture_time_chart(plant_data)
     plot2 = generate_temperature_time_chart(plant_data)
     display_plots(plot1, plot2)
     display_historic_download_title()
-    date_range = create_date_range_selector()
-    create_download_button(date_range)
+    dates_range = create_date_range_selector()
+    create_download_button(dates_range)
+
+
+if __name__ == "__main__":
+    main()
