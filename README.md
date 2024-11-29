@@ -69,19 +69,23 @@ Technologies used within this project include:
 We welcome contributions to make this project better! If you have an idea, find a bug, or want to add a feature, follow these steps:
 
 1. Fork the Repository
+   
 Create a personal copy of the repository by clicking the "Fork" button in GitHub.
 
 2. Clone the Repository
+
 Copy the repository to your local machine using the following command:
 
 ```git clone https://github.com/anitamegarry/LMNH-Plant-Health-Monitor.git```
 
 3. Create a Branch
+   
 Create a branch for your changes with a descriptive name:
 
 ```git checkout -b feature/your-feature-name```
 
 4. Make Your Changes
+   
 Implement your feature or fix the bug. Make sure to:
 
 Follow the coding style guidelines (if any are defined).
@@ -89,16 +93,19 @@ Add or update documentation, if needed.
 Write tests to cover any new functionality or changes.
 
 5. Commit Your Changes
+   
 Commit your changes with a clear and concise commit message:
 
 ```git commit -m "Add a brief description of your changes"```
 
 6. Push Your Branch
+   
 Push your changes to your forked repository:
 
 ```git push origin feature/your-feature-name```
 
 7. Open a Pull Request
+   
 Go to the original repository on GitHub and open a Pull Request (PR):
 
 Include a description of the changes you've made.
@@ -106,6 +113,7 @@ Mention any related issues (e.g., "Fixes #123").
 Add screenshots or examples, if applicable.
 
 8. Review Process
+   
 The maintainers will review your PR and may suggest changes. 
 Once approved, your changes will be merged into the main project!
 
