@@ -4,6 +4,7 @@ see live plant status data ad access historical data
 """
 
 # pylint: disable=E1101
+# pylint: disable=R0801
 
 import os
 from datetime import datetime, time, date
