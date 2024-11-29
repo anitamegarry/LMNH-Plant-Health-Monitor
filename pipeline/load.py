@@ -55,13 +55,13 @@ def insert_into_recording_table(connection: object,
                                 db_cursor: object,
                                 dataframe: pd.DataFrame) -> None:
     """Insert necessary data from DataFrame into the recording table."""
-    for index, row in dataframe.iterrows():
 
-        plant_id = row['plant_id']
-        recording_taken = row['recording_taken']
-        last_watered = row['last_watered']
-        soil_moisture = row['soil_moisture']
-        temperature = row['temperature']
+    for row in dataframe.itertuples(index=False):
+        plant_id = row.plant_id
+        recording_taken = row.recording_taken
+        last_watered = row.last_watered
+        soil_moisture = row.soil_moisture
+        temperature = row.temperature
 
         db_cursor.execute("""
                         INSERT INTO recording (plant_id, recording_taken, last_watered, soil_moisture, temperature) VALUES

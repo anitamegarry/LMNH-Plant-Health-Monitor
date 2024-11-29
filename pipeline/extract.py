@@ -1,7 +1,6 @@
 """Script that connects to 'data-eng-plants-api'
    Extracts the data
    Puts it into a Pandas DataFrame"""
-from multiprocessing import Pool, cpu_count
 from typing import Optional
 import requests
 import pandas as pd
@@ -64,20 +63,6 @@ def initialise_dataframe() -> pd.DataFrame:
     })
 
 
-# def load_into_dataframe() -> pd.DataFrame:
-#     """Fetches API data for all plants using multiprocessing and appends it to a DataFrame."""
-#     plant_dataframe = initialise_dataframe()
-#     with Pool(processes=cpu_count()) as pool:
-#         results = pool.map(fetch_and_extract_plant_data,
-#                            range(TOTAL_NUMBER_OF_PLANTS + 1))
-
-#     for plant_data in results:
-#         if plant_data:
-#             plant_dataframe = pd.concat(
-#                 [plant_dataframe, pd.DataFrame([plant_data])], ignore_index=True)
-
-#     return plant_dataframe
-
 def load_into_dataframe() -> pd.DataFrame:
     """Fetches API data for all plants appends it to a DataFrame."""
     plant_dataframe = initialise_dataframe()
@@ -91,4 +76,4 @@ def load_into_dataframe() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    print(load_into_dataframe())
+    load_into_dataframe()
