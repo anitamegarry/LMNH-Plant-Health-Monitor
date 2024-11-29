@@ -1,7 +1,6 @@
 # pylint: disable=E1101
 """Script that will insert plant data into RDS."""
 import os
-from time import time
 from typing import List, Tuple
 import pymssql
 import pandas as pd
@@ -81,7 +80,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    start_time = time()
     main()
-    end_time = time()
-    print(end_time - start_time)
