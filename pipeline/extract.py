@@ -1,7 +1,6 @@
 """Script that connects to 'data-eng-plants-api'
    Extracts the data
    Puts it into a Pandas DataFrame"""
-from multiprocessing import Pool, cpu_count
 from typing import Optional
 import requests
 import pandas as pd
@@ -34,7 +33,8 @@ def extract_plant_data(response: dict) -> dict:
         "last_watered": response.get("last_watered"),
         "soil_moisture": response.get("soil_moisture"),
         "temperature": response.get("temperature"),
-        "country_code": response.get("origin_location", [None, None, None, None])[3]
+        "country_code": response.get("origin_location", [None, None, None, None])[3],
+        "plant_id": response.get("plant_id")
     }
 
 
@@ -59,17 +59,15 @@ def initialise_dataframe() -> pd.DataFrame:
         "soil_moisture": pd.Series(dtype=float),
         "temperature": pd.Series(dtype=float),
         "country_code": pd.Series(dtype=str),
+        "plant_id": pd.Series(dtype=int)
     })
 
 
 def load_into_dataframe() -> pd.DataFrame:
-    """Fetches API data for all plants using multiprocessing and appends it to a DataFrame."""
+    """Fetches API data for all plants appends it to a DataFrame."""
     plant_dataframe = initialise_dataframe()
-    with Pool(processes=cpu_count()) as pool:
-        results = pool.map(fetch_and_extract_plant_data,
-                           range(TOTAL_NUMBER_OF_PLANTS + 1))
-
-    for plant_data in results:
+    for plant_id in range(TOTAL_NUMBER_OF_PLANTS + 1):
+        plant_data = fetch_and_extract_plant_data(plant_id)
         if plant_data:
             plant_dataframe = pd.concat(
                 [plant_dataframe, pd.DataFrame([plant_data])], ignore_index=True)

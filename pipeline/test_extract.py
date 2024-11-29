@@ -62,7 +62,8 @@ def test_extract_plant_data_valid():
         "last_watered": "Mon, 25 Nov 2024 14:03:04 GMT",
         "soil_moisture": 99.0464993678606,
         "temperature": 13.15915073027191,
-        "country_code": "BR"
+        "country_code": "BR",
+        "plant_id": None
     }
     assert result == expected
 
@@ -88,6 +89,7 @@ def test_extract_plant_data_missing_botanist():
         "last_watered": "Mon, 25 Nov 2024 14:03:04 GMT",
         "soil_moisture": 99.0464993678606,
         "temperature": 13.15915073027191,
-        "country_code": "BR"
+        "country_code": "BR",
+        "plant_id": None
     }
     assert result == expected

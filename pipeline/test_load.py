@@ -2,7 +2,7 @@
 import pytest
 import pandas as pd
 from unittest.mock import MagicMock
-from load import get_foreign_key, get_all_plant_foreign_keys, insert_into_plant_table, insert_into_recording_table
+from load import get_foreign_key, get_all_plant_foreign_keys, insert_into_recording_table
 
 
 @pytest.fixture
@@ -90,43 +90,9 @@ def test_get_all_plant_foreign_keys_success(mock_db_cursor, mock_get_foreign_key
         mock_db_cursor, 'country', 'country_code', 'CA')
 
 
-def test_insert_into_plant_table(mock_db_cursor, mock_connection, mock_get_foreign_key):
-    data = {
-        'botanist_email': ['botanist1@email.com', 'botanist2@email.com'],
-        'plant_name': ['Plant A', 'Plant B'],
-        'country_code': ['US', 'UK']
-    }
-    df = pd.DataFrame(data)
-
-    mock_get_foreign_key.return_value = 1
-
-    mock_db_cursor.execute.return_value = None
-
-    mock_db_cursor.fetchone.side_effect = [(1,), (2,)]
-
-    plant_ids = insert_into_plant_table(mock_connection, mock_db_cursor, df)
-
-    assert plant_ids == [1, 2], "Plant IDs should be [1, 2]"
-
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'botanist', 'botanist_email', 'botanist1@email.com')
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'species', 'plant_name', 'Plant A')
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'country', 'country_code', 'US')
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'botanist', 'botanist_email', 'botanist2@email.com')
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'species', 'plant_name', 'Plant B')
-    mock_get_foreign_key.assert_any_call(
-        mock_db_cursor, 'country', 'country_code', 'UK')
-
-    mock_db_cursor.execute.assert_any_call("SELECT SCOPE_IDENTITY()")
-    assert mock_db_cursor.execute.call_count == 4
-
-
 def test_insert_into_recording_table(mock_db_cursor, mock_connection):
     data = {
+        'plant_id': [1, 2],
         'recording_taken': ['2024-11-01', '2024-11-02'],
         'last_watered': ['2024-11-01', '2024-11-02'],
         'soil_moisture': [30, 40],
@@ -134,19 +100,17 @@ def test_insert_into_recording_table(mock_db_cursor, mock_connection):
     }
     df = pd.DataFrame(data)
 
-    plant_ids = [1, 2]
-
     mock_db_cursor.execute.return_value = None
     mock_db_cursor.commit.return_value = None
 
-    insert_into_recording_table(mock_connection, mock_db_cursor, df, plant_ids)
+    insert_into_recording_table(mock_connection, mock_db_cursor, df)
 
     for index, row in df.iterrows():
         expected_query = """
                         INSERT INTO recording (plant_id, recording_taken, last_watered, soil_moisture, temperature) VALUES
                         (%s, %s, %s, %s, %s)"""
 
-        expected_args = (plant_ids[index], row['recording_taken'],
+        expected_args = (row['plant_id'], row['recording_taken'],
                          row['last_watered'], row['soil_moisture'], row['temperature'])
 
         mock_db_cursor.execute.assert_any_call(expected_query, expected_args)
