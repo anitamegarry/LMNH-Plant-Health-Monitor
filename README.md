@@ -18,7 +18,7 @@
 
 This project automates the process of extracting, transforming, and loading (ETL) plant data from an external API into a cloud-based environment, hosted entirely on AWS. It is designed for the Liverpool Museum of Natural History to efficiently manage real-time plant data and ensure secure, long-term data storage.
 
-The system extracts plant data every minute, loads it into an AWS RDS database for immediate analysis, and automates daily archival to AWS S3. Museum staff can access both real-time and historical data via an interactive Streamlit dashboard. By leveraging AWS services such as RDS, ECS, Lambda, and S3, the project provides a scalable, efficient, and secure solution to manage large volumes of plant data with minimal manual intervention.
+The system extracts plant data every minute, loads it into an AWS RDS database for immediate analysis, and automates daily archival to AWS S3. Museum staff can access both real-time and historical data via an interactive streamlit dashboard. By leveraging AWS services such as RDS, ECS, Lambda, and S3, the project provides a scalable, efficient, and secure solution to manage large volumes of plant data with minimal manual intervention.
 
 ## Features
 
