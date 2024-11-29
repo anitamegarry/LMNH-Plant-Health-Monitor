@@ -10,6 +10,10 @@ data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 }
 
+data "aws_ecs_cluster" "c14-ecs-cluster" {
+  cluster_name = "c14-ecs-cluster"
+}
+
 resource "aws_cloudwatch_log_group" "c14_plant_practitioners_log_group" {
   name              = "/ecs/c14_plant_practitioners_task_definition"
   retention_in_days = 7
@@ -21,54 +25,48 @@ resource "aws_ecs_task_definition" "c14_plant_practitioners_task_definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-
   container_definitions = jsonencode([
-    {
-      name      = "c14-plant-practitioners-container"
-
-      # Need to add ECR image to task def
-
-      image     = "${aws_ecr_repository.plant_practitioners_repo.repository_url}:latest"  
-      cpu       = 256
-      memory    = 512
-      essential = true
-      environment = {
-        variables = {
-            DB_HOST            = var.db_host
-            DB_PORT            = var.db_port
-            DB_PASSWORD        = var.db_password
-            DB_USER            = var.db_user
-            DB_NAME            = var.db_name
-            SCHEMA_NAME        = var.schema_name
-            BUCKET_NAME        = var.bucket_name
-            ACCESS_KEY_ID      = var.access_key_id
-            SECRET_ACCESS_KEY  = var.secret_access_key
-            }
-        }
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-          protocol      = "tcp"
-        }
-      ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.c14_plant_practitioners_log_group.name
-          awslogs-region        = "eu-west-2"
-          awslogs-stream-prefix = "ecs"
+      {
+        name      = "c14-plant-practitioners-container"
+        image     = "${data.aws_ecr_repository.c14_plant_practitioners_dashboard_ecr.repository_url}:latest"
+        cpu       = 256
+        memory    = 512
+        essential = true
+        environment = [
+          { name = "DB_HOST", value = var.db_host },
+          { name = "DB_PORT", value = var.db_port },
+          { name = "DB_PASSWORD", value = var.db_password },
+          { name = "DB_USER", value = var.db_user },
+          { name = "DB_NAME", value = var.db_name },
+          { name = "SCHEMA_NAME", value = var.schema_name },
+          { name = "BUCKET_NAME", value = var.bucket_name },
+          { name = "ACCESS_KEY_ID", value = var.access_key_id },
+          { name = "SECRET_ACCESS_KEY", value = var.secret_access_key }
+        ]
+        portMappings = [
+          {
+            containerPort = 8501
+            hostPort      = 8501
+            protocol      = "tcp"
+          }
+        ]
+        logConfiguration = {
+          logDriver = "awslogs"
+          options = {
+            awslogs-group         = aws_cloudwatch_log_group.c14_plant_practitioners_log_group.name
+            awslogs-region        = "eu-west-2"
+            awslogs-stream-prefix = "ecs"
+          }
         }
       }
-    }
-  ])
+    ])
     execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     task_role_arn      = data.aws_iam_role.ecs_task_execution_role.arn
 }
 
 resource "aws_ecs_service" "c14_plant_practitioners_service" {
   name            = "c14-plant-practitioners-service"
-  cluster         = aws_ecs_cluster.c14-ecs-cluster.id
+  cluster         = data.aws_ecs_cluster.c14-ecs-cluster.id  
   task_definition = aws_ecs_task_definition.c14_plant_practitioners_task_definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"
