@@ -7,11 +7,14 @@ Before running the Terraform scripts, make sure you have Terraform installed. Yo
 
 To install Terraform, run: `brew install terraform`
 
+
 ### Execution
 To deploy the infrastructure, run the following Terraform commands from the root project directory:
-1. Initialise terraform: `terraform init`
-2. Review the plan: `terraform plan`
-3. Apply the plan & provision resources: `terraform apply`
+
+1. Initialise Terraform: `terraform init`
+2. Plan the infrastucture: `terraform plan`
+3. Apply the plan and provision resources: `terraform apply`
+
 
 ### These terraform files implement the following AWS resources:
 
