@@ -2,6 +2,8 @@
 stores it as a .csv file, uploads to S3 and resets the database"""
 
 # pylint: disable=E1101
+# pylint: disable=W0613
+# pylint: disable=E1120
 
 import os
 import csv
@@ -104,9 +106,6 @@ def truncate_table():
         cursor = get_cursor(conn)
         cursor.execute(f"TRUNCATE TABLE {SCHEMA}.recording")
         print("Table truncated.")
-        cursor.execute("""DELETE FROM beta.plant;
-                       DBCC CHECKIDENT ('beta.plant', RESEED, 0);""")
-        print("Table truncated.")
         conn.commit()
         return None
     except pymssql.Error as e:
@@ -115,6 +114,18 @@ def truncate_table():
     finally:
         conn.close()
         print("Connection closed.")
+
+
+def lambda_handler(event, context):
+    """Lambda function that runs the data backup pipeline"""
+    try:
+        extract_data()
+        s3_client = get_client()
+        s3_client.upload_file(CSV_FILE, os.getenv("BUCKET_NAME"), CSV_FILE)
+        truncate_table()
+        return {"statusCode": 200, "body": "Successfully executed data backup pipeline"}
+    except Exception as e:  # pylint: disable=broad-except
+        return {"statusCode": 500, "body": f"Error occurred: {str(e)}"}
 
 
 if __name__ == "__main__":

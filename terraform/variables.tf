@@ -45,3 +45,9 @@ variable "schema_name" {
   type        = string
   sensitive   = true
 }
+
+variable "bucket_name" {
+  description = "S3 bucket name in the database"
+  type        = string
+  sensitive   = true
+}
