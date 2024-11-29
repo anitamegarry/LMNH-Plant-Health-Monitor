@@ -23,6 +23,18 @@ resource "aws_lambda_function" "c14_plant_practitioners_backup_lambda_function" 
     subnet_ids         = ["subnet-0497831b67192adc2", "subnet-0acda1bd2efbf3922", "subnet-0465f224c7432a02e"]  
     security_group_ids = [aws_security_group.c14_plant_practitioners_security_group.id]
   }
+  environment {
+    variables = {
+      DB_HOST            = var.DB_HOST
+      DB_PORT            = var.DB_PORT
+      DB_PASSWORD        = var.DB_PASSWORD
+      DB_USER            = var.DB_USER
+      DB_NAME            = var.DB_NAME
+      SCHEMA_NAME        = var.SCHEMA_NAME
+      BUCKET_NAME        = var.BUCKET_NAME
+      ACCESS_KEY_ID      = var.ACCESS_KEY_ID
+      SECRET_ACCESS_KEY  = var.SECRET_ACCESS_KEY
+    }  
 }
 
 resource "aws_cloudwatch_event_rule" "c14_plant_practitioners_backup_rule" {
