@@ -21,6 +21,16 @@ resource "aws_lambda_function" "c14_plant_practitioners_etl_lambda_function" {
   role          = aws_iam_role.c14_plant_practitioners_etl_lambda_role.arn
   package_type  = "Image"
   image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c14_plant_practitioners_etl_ecr@sha256:ca7d0ffe14ffb7bab95a71ffc249c11b107fd3bbdd56f8ae18fc8d2e32d03769"
+  environment {
+    variables = {
+      DB_HOST            = var.db_host
+      DB_PORT            = var.db_port
+      DB_PASSWORD        = var.db_password
+      DB_USER            = var.db_user
+      DB_NAME            = var.db_name
+      SCHEMA_NAME        = var.schema_name
+    }
+  }
 }
 
 # create cloudwatch event rule - schedule for the event
