@@ -1,3 +1,18 @@
+# Terraform Infrastructure
+
+This folder contains the Terraform scripts necessary to provision the AWS infrastructure for the ETL pipeline, the data backup script, and the streamlit dashboard.
+
+### Prerequisites
+Before running the Terraform scripts, make sure you have Terraform installed. You also need to configure your AWS credentials. 
+
+To install Terraform, run: `brew install terraform`
+
+### Execution
+To deploy the infrastructure, run the following Terraform commands from the root project directory:
+1. Initialise terraform: `terraform init`
+2. Review the plan: `terraform plan`
+3. Apply the plan & provision resources: `terraform apply`
+
 ### These terraform files implement the following AWS resources:
 
 - **`s3_bucket.tf`**
