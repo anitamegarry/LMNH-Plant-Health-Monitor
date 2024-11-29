@@ -120,8 +120,8 @@ def lambda_handler(event, context):
     """Lambda function that runs the data backup pipeline"""
     try:
         extract_data()
-        s3 = get_client()
-        s3.upload_file(CSV_FILE, os.getenv("BUCKET_NAME"), CSV_FILE)
+        s3_client = get_client()
+        s3_client.upload_file(CSV_FILE, os.getenv("BUCKET_NAME"), CSV_FILE)
         truncate_table()
         return {"statusCode": 200, "body": "Successfully executed data backup pipeline"}
     except Exception as e:  # pylint: disable=broad-except
