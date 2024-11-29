@@ -18,7 +18,20 @@ resource "aws_lambda_function" "c14_plant_practitioners_backup_lambda_function" 
   function_name = "c14_plant_practitioners_backup_lambda"
   role          = aws_iam_role.c14_plant_practitioners_backup_lambda_role.arn
   package_type  = "Image"
-  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c14_plant_practitioners_data_backup_ecr@sha256:f27ba26b68436c1b01f7940ed1dabb8ceec86f09c3db791687ba30d3f286f755"
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c14_plant_practitioners_data_backup_ecr@sha256:6ef9379339599b1a0f2047281a1f71dd37203a320667f34f782301bd07951e6e"
+  environment {
+    variables = {
+      DB_HOST            = var.db_host
+      DB_PORT            = var.db_port
+      DB_PASSWORD        = var.db_password
+      DB_USER            = var.db_user
+      DB_NAME            = var.db_name
+      SCHEMA_NAME        = var.schema_name
+      BUCKET_NAME        = var.bucket_name
+      ACCESS_KEY_ID      = var.access_key_id
+      SECRET_ACCESS_KEY  = var.secret_access_key
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "c14_plant_practitioners_backup_rule" {
