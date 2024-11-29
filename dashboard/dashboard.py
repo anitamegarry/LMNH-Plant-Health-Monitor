@@ -153,7 +153,7 @@ def download_from_s3(file_name):
     s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key
                       )
     try:
-        s3.download_file("c14-plant-practitioners-long-term-storage",
+        s3.download_file(os.getenv("BUCKET_NAME"),
                          file_name, file_name)
         return file_name
     except (botocore.exceptions.NoCredentialsError, botocore.exceptions.ClientError) as e:
