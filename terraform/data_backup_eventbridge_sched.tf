@@ -18,11 +18,7 @@ resource "aws_lambda_function" "c14_plant_practitioners_backup_lambda_function" 
   function_name = "c14_plant_practitioners_backup_lambda"
   role          = aws_iam_role.c14_plant_practitioners_backup_lambda_role.arn
   package_type  = "Image"
-  image_uri     = "[DOCKER IMAGE URI HERE]"
-  vpc_config {
-    subnet_ids         = ["subnet-0497831b67192adc2", "subnet-0acda1bd2efbf3922", "subnet-0465f224c7432a02e"]  
-    security_group_ids = [aws_security_group.c14_plant_practitioners_security_group.id]
-  }
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c14_plant_practitioners_data_backup_ecr@sha256:f27ba26b68436c1b01f7940ed1dabb8ceec86f09c3db791687ba30d3f286f755"
 }
 
 resource "aws_cloudwatch_event_rule" "c14_plant_practitioners_backup_rule" {
@@ -35,7 +31,6 @@ resource "aws_cloudwatch_event_rule" "c14_plant_practitioners_backup_rule" {
 resource "aws_cloudwatch_event_target" "c14_plant_practitioners_backup_target" {
   rule      = aws_cloudwatch_event_rule.c14_plant_practitioners_backup_rule.name
   arn       = aws_lambda_function.c14_plant_practitioners_backup_lambda_function.arn
-  role_arn  = aws_iam_role.c14_plant_practitioners_backup_lambda_role.arn
 }
 
 resource "aws_lambda_permission" "c14_plant_practitioners_backup_lambda_permission" {
