@@ -148,7 +148,10 @@ def display_plots(chart1: alt.Chart, chart2: alt.Chart) -> None:
 
 def download_from_s3(file_name):
     """Download the given file from the long term S3 storage"""
-    s3 = boto3.client('s3')
+    access_key_id = os.getenv("ACCESS_KEY_ID")
+    secret_access_key = os.getenv("SECRET_ACCESS_KEY")
+    s3 = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key
+                      )
     try:
         s3.download_file(os.getenv("BUCKET_NAME"),
                          file_name, file_name)
